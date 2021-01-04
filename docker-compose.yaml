@@ -1,0 +1,42 @@
+version: "2.3"
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: backend
+    ports:
+      - 9090:9090
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./config.json:/app/config.json
+  db:
+    image: 'docker.io/bitnami/mariadb-galera:10.5-debian-10'
+    container_name: db
+    ports:
+      - '3306:3306'
+      - '4444:4444'
+      - '4567:4567'
+      - '4568:4568'
+    volumes:
+      - 'db:/bitnami/mariadb'
+    environment:
+      # ALLOW_EMPTY_PASSWORD is recommended only for development.
+      - MARIADB_ROOT_PASSWORD=root
+      - MARIADB_GALERA_MARIABACKUP_PASSWORD=backup
+      - MARIADB_DATABASE=ems_api
+      - MARIADB_USER=user
+      - MARIADB_PASSWORD=password
+    volumes:             
+      - ./init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ['CMD', '/opt/bitnami/scripts/mariadb-galera/healthcheck.sh']
+      interval: 15s
+      timeout: 5s
+      retries: 6
+
+volumes:
+  db:
+    driver: local
