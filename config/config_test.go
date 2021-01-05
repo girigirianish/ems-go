@@ -32,7 +32,7 @@ database:
 `)
 
 func createTemporaryConfig(t *testing.T) *os.File {
-	f, err := ioutil.TempFile("", "meroedu.yml")
+	f, err := ioutil.TempFile("", "ems-go.yml")
 	if err != nil {
 		t.Fatalf("unable to create temporary config: %v", err)
 	}
